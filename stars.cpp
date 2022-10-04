@@ -6,10 +6,13 @@ Stars::Stars(SDL_Renderer *m_renderer)
 {
     renderer = m_renderer;
 
-    quantity = 390;
-    starWidth = 10;
-    starHeight = 10;
+    quantity = 100;
+    starWidth = 30;
+    starHeight = 20;
     distanceBetweenStars = 5;
+
+    SDL_Surface *imgStar = SDL_LoadBMP("star.bmp");
+    starTexture = SDL_CreateTextureFromSurface(renderer, imgStar);
 
     distributeStars();
 }
@@ -28,7 +31,7 @@ void Stars::distributeStars()
 
         int nextStarPosition = calcNextStarPosition(currentStarColumn);
 
-        if(nextStarPosition >= Frame::width)
+        if((nextStarPosition + starWidth) >= Frame::width)
         {
             currentStarRow += (starHeight + (2 * distanceBetweenStars));
             currentStarColumn = 1;
@@ -48,8 +51,7 @@ void Stars::prepareToRender()
 {
     for(SDL_Rect star: starVector)
     {
-        SDL_SetRenderDrawColor(renderer,255,255,0,255);
-        SDL_RenderFillRect(renderer, &star);
+        SDL_RenderCopy(renderer, starTexture, NULL, &star);
     }
 }
 
@@ -63,19 +65,20 @@ std::vector<SDL_Rect> Stars::getStarVector()
     return starVector;
 }
 
-bool Stars::findStarInPosition(int x, int y)
+bool Stars::findStarInPosition(int xBallPosition, int yBallPosition)
 {
-    std::cout << "x: " << x << " y: " << y << '\n';
     bool finded = false;
     int counter = 0;
 
     for(int i = 0; i< starVector.size(); i++)
     {
         SDL_Rect currentStar = starVector[i];
-        //std::cout << "x: " << star.x << " y: " << star.y << '\n';
-        if(currentStar.x == x && currentStar.y == y)
+        int negativePositionContactStar = currentStar.x - (currentStar.w / 2);
+        int positivePositionContactStar = currentStar.x + (currentStar.w / 2);
+
+        if( (xBallPosition >= negativePositionContactStar && xBallPosition <= positivePositionContactStar)
+           && currentStar.y == yBallPosition)
         {
-            //std::cout << "Encontrou\n";
             finded = true;
             starVector.erase(starVector.begin() + i);
             break;
@@ -84,4 +87,3 @@ bool Stars::findStarInPosition(int x, int y)
     }
     return finded;
 }
-

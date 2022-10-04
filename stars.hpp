@@ -6,6 +6,7 @@
 class Stars{
     private:
         SDL_Renderer *renderer;
+        SDL_Texture *starTexture;
         std::vector<SDL_Rect> starVector;
         int calcNextStarPosition(int currentStarColumn);
         void distributeStars();

@@ -11,6 +11,7 @@ class Ball{
         Player *player;
         Stars *stars;
         SDL_Rect ball;
+        SDL_Texture *shootTexture;
 
         int ballWidth;
         int ballHeight;
@@ -20,7 +21,7 @@ class Ball{
         static void shootTask(Player *p, Stars *s, SDL_Rect *ball);
     public:
         Ball(SDL_Renderer *m_renderer, Player *p, Stars *s);
-        void action(SDL_Event event);
+        void action(const Uint8 *keystates);
         void prepareToRender();
         SDL_Rect getBallRect();
 };

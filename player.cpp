@@ -4,41 +4,32 @@
 #include "ball.hpp"
 #include <SDL.h>
 
-#define P_VEL 10
+#define P_VEL 20
 
 Player::Player(SDL_Renderer *m_renderer)
 {
     renderer = m_renderer;
 
-    bar.h = 10;
-    bar.w = 75;
+    bar.h = 60;
+    bar.w = 100;
     bar.x = calcVerticalCenterPosition();
     bar.y = calcHorizontalCenterPosition();
+
+    SDL_Surface *imgSpaceShip = SDL_LoadBMP("spaceShip.bmp");
+    spaceShipTexture = SDL_CreateTextureFromSurface(renderer, imgSpaceShip);
 }
 
 void Player::prepareToRender()
 {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
-    SDL_RenderFillRect(renderer, &bar);
+     SDL_RenderCopy(renderer, spaceShipTexture, NULL, &bar);
 }
 
-void Player::action(SDL_Event event)
+void Player::action(const Uint8 *keyStates)
 {
-    switch(event.key.keysym.sym)
-    {
-    case SDLK_DOWN:
-        //Frame::downMove(bar, P_VEL);
-        break;
-    case SDLK_UP:
-        //Frame::upMove(bar, P_VEL);
-        break;
-    case SDLK_RIGHT:
-        Frame::rightMove(bar,P_VEL);
-        break;
-    case SDLK_LEFT:
-        Frame::leftMove(bar,P_VEL);
-        break;
-    }
+    if(keyStates[SDL_SCANCODE_DOWN]) Frame::downMove(bar, P_VEL);
+    if(keyStates[SDL_SCANCODE_UP]) Frame::upMove(bar, P_VEL);
+    if(keyStates[SDL_SCANCODE_LEFT]) Frame::leftMove(bar, P_VEL);
+    if(keyStates[SDL_SCANCODE_RIGHT]) Frame::rightMove(bar, P_VEL);
 }
 
 int Player::calcVerticalCenterPosition(){

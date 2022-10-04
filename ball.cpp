@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <SDL.h>
 
 Ball::Ball(SDL_Renderer *m_renderer, Player *p, Stars *s)
 {
@@ -9,8 +10,11 @@ Ball::Ball(SDL_Renderer *m_renderer, Player *p, Stars *s)
     player = p;
     stars = s;
 
-    ballWidth = 10;
-    ballHeight = 10;
+    SDL_Surface *imgShoot = SDL_LoadBMP("shootfire.bmp");
+    shootTexture = SDL_CreateTextureFromSurface(renderer, imgShoot);
+
+    ballWidth = 25;
+    ballHeight = 25;
 
     initBall();
 }
@@ -23,13 +27,13 @@ void Ball::initBall()
     ball.y = player->calcVerticalCenterPosition();
 }
 
-void Ball::action(SDL_Event event)
+void Ball::action(const Uint8 *keystates)
 {
-    switch(event.key.keysym.sym)
-    {
-    case SDLK_SPACE:
-        shoot();
-        break;
+    if(keystates[SDL_SCANCODE_SPACE]){
+        if((ball.x == 5000 && ball.y == 5000)
+           || (ball.x == player->calcHorizontalCenterPosition() && ball.y == player->calcVerticalCenterPosition() )){
+            shoot();
+        }
     }
 }
 
@@ -41,27 +45,22 @@ void Ball::shoot()
 
 void Ball::shootTask(Player *p, Stars *s, SDL_Rect *b)
 {
-
     b->x = p->getBarRect().x + 37;
     b->y = p->getBarRect().y;
 
-    while( !s->findStarInPosition(b->x, b->y) && b->y >= 0 )
+    while(!s->findStarInPosition(b->x, b->y) && b->y >= 0)
     {
-        std::cout << "Atirou\n";
-
         b->y -= BALL_VEL;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::nanoseconds(400000));
     }
 
-     b->x = p->getBarRect().x + 37;
-     b->y = p->getBarRect().y;
+    b->x = 5000; //Força posicionamento fora do frame
+    b->y = 5000; //Força posicionamento fora do frame
 }
 
 void Ball::prepareToRender()
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    SDL_RenderFillRect(renderer, &ball);
+        SDL_RenderCopy(renderer, shootTexture, NULL, &ball);
 }
 
 SDL_Rect Ball::getBallRect()

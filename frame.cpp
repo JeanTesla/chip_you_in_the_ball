@@ -1,7 +1,7 @@
 #include "iostream"
 #include "frame.hpp"
 
-int Frame::width = 800;
+int Frame::width = 820;
 int Frame::height = 600;
 
 void Frame::rightMove(SDL_Rect &rect, int moveTo)
